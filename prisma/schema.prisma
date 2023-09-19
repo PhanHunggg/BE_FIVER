@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Comment {
+  id_comment   Int      @id @default(autoincrement())
+  id_job       Int
+  id_user      Int
+  date_comment DateTime
+  content      String   @db.VarChar(255)
+  star_comment Int
+  Job          Job      @relation(fields: [id_job], references: [id_job])
+  User         User     @relation(fields: [id_user], references: [id_user])
+}
+
+model HireJob {
+  id_hire_job Int      @id @default(autoincrement())
+  id_job      Int
+  id_user     Int
+  date_hire   DateTime
+  complete    Boolean
+  Job         Job      @relation(fields: [id_job], references: [id_job])
+  User        User     @relation(fields: [id_user], references: [id_user])
+}
+
+model Job {
+  id_job            Int        @id @default(autoincrement())
+  job_name          String     @db.VarChar(150)
+  rate              String     @db.VarChar(255)
+  salary            Int
+  image             String     @db.VarChar(255)
+  describe          String     @db.VarChar(2000)
+  short_description String     @db.VarChar(255)
+  star              Int
+  id_creator        Int
+  id_job_catalog    Int
+  Comment           Comment[]
+  HireJob           HireJob[]
+  User              User       @relation(fields: [id_creator], references: [id_user])
+  JobCatalog        JobCatalog @relation(fields: [id_job_catalog], references: [id_job_catalog])
+}
+
+model JobCatalog {
+  id_job_catalog   Int        @id @default(autoincrement())
+  name_job_catalog String     @db.VarChar(150)
+  id_type_detail   Int
+  Job              Job[]
+  TypeDetail       TypeDetail @relation(fields: [id_type_detail], references: [id_type_detail])
+}
+
+model TypeDetail {
+  id_type_detail Int          @id @default(autoincrement())
+  detail_name    String       @db.VarChar(150)
+  image          String       @db.VarChar(255)
+  id_type_job    Int
+  JobCatalog     JobCatalog[]
+  TypeJob        TypeJob      @relation(fields: [id_type_job], references: [id_type_job])
+}
+
+model TypeJob {
+  id_type_job   Int          @id @default(autoincrement())
+  type_job_name String       @db.VarChar(150)
+  TypeDetail    TypeDetail[]
+}
+
+model User {
+  email         String    @db.VarChar(150)
+  name          String    @db.VarChar(50)
+  birth_day     DateTime?
+  id_user       Int       @id @default(autoincrement())
+  password      String    @db.VarChar(255)
+  phone         String    @db.VarChar(50)
+  role          String    @db.VarChar(150)
+  gender        Boolean
+  certification String[]  @db.VarChar(255)
+  skill         String[]  @db.VarChar(255)
+  hash          String?   @db.VarChar(255)
+  hashedRt      String?   @db.VarChar(255)
+  Comment       Comment[]
+  HireJob       HireJob[]
+  Job           Job[]
+}
